@@ -11,9 +11,10 @@ from Learners import *
 from ABCD import ABCD
 from sklearn.metrics import roc_curve, auc
 import pickle
+from demos import cmd
 
 learners=[NB, KNN, DT,LR, SVM, RF]
-files = ['tomcat','synapse', 'camel', 'ant', 'arc', 'ivy', 'velocity', 'redaktor', 'jedit']
+#files = ['tomcat','synapse', 'camel', 'ant', 'arc', 'ivy', 'velocity', 'redaktor', 'jedit']
 
 def cut_position(pos, neg, percentage=0):
     return int(len(pos) * percentage / 100), int(len(neg) * percentage / 100)
@@ -32,7 +33,9 @@ def update_parents(parents):
         temp.append([instance,i[1]])
     return temp
 
-if __name__ == '__main__':
+def _test(res=''):
+    files=[]
+    files.append(res)
     for f in files:
         df=pd.read_csv('/Users/amrit/GITHUB/Mahakil_defect_imbalance/data/'+f+'.csv')
         df_def=df[df['bug']==1]
@@ -100,5 +103,8 @@ if __name__ == '__main__':
                 dic[lea.__name__]["False_alarm"].append(stats[target][1])
             print(dic)
             final[f]=dic
-    with open('../dump/mahakil.pickle', 'wb') as handle:
+    with open('../dump/'+res+'.pickle', 'wb') as handle:
         pickle.dump(final, handle)
+
+if __name__ == '__main__':
+    eval(cmd())
