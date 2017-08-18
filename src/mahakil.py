@@ -36,23 +36,24 @@ def update_parents(parents):
 def _test(res=''):
     files=[]
     files.append(res)
+    final={}
     for f in files:
-        df=pd.read_csv('/Users/amrit/GITHUB/Mahakil_defect_imbalance/data/'+f+'.csv')
+        df=pd.read_csv('../data/'+f+'.csv')
         df_def=df[df['bug']==1]
         df_non=df[df['bug']==0]
         pos=df_def.drop(['bug'],axis=1)
         neg = df_non.drop(['bug'], axis=1)
         pos=np.array(pos.values.tolist())
         neg=np.array(neg.values.tolist())
-        final = {}
+        result = {}
         cut_pos, cut_neg = cut_position(pos, neg, percentage=80)
         for lea in learners:
             dic={}
             print(lea.__name__)
-            dic[lea.__name__]={}
+            #dic[lea.__name__]={}
             measures = ["Recall", "Precision", "Accuracy", "F_score", "False_alarm", "AUC"]
             for q in measures:
-                dic[lea.__name__][q]=[]
+                dic[q]=[]
             for folds in range(15):
                 pos_shuffle = range(0, len(pos))
                 neg_shuffle = range(0, len(neg))
@@ -95,14 +96,14 @@ def _test(res=''):
                 else:
                     target = 0
                 fpr, tpr, _ = roc_curve(test_label, prediction, pos_label=target)
-                dic[lea.__name__]["AUC"].append(auc(fpr, tpr))
-                dic[lea.__name__]["Recall"].append(stats[target][0])
-                dic[lea.__name__]["Precision"].append(stats[target][3])
-                dic[lea.__name__]["Accuracy"].append(stats[target][4])
-                dic[lea.__name__]["F_score"].append(stats[target][5])
-                dic[lea.__name__]["False_alarm"].append(stats[target][1])
-            print(dic)
-            final[f]=dic
+                dic["AUC"].append(auc(fpr, tpr))
+                dic["Recall"].append(stats[target][0])
+                dic["Precision"].append(stats[target][3])
+                dic["Accuracy"].append(stats[target][4])
+                dic["F_score"].append(stats[target][5])
+                dic["False_alarm"].append(stats[target][1])
+            result[lea.__name__]=dic
+        final[f]=result
     with open('../dump/'+res+'.pickle', 'wb') as handle:
         pickle.dump(final, handle)
 
